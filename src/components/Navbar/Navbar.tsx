@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 
-const pages = ["Home", "Debate", "Feature", "Evaluation"];
+const pages = ["Home", "About Us"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {

@@ -14,8 +14,8 @@ const Homepage = () => {
     <div>
       <Navbar />
       <HeroSection />
-      <Subject />
-      <DebateSessions />
+      {/* <Subject /> */}
+      {/* <DebateSessions /> */}
       <ClassTestSection />
       <WhyJoinUs />
       <MockTests />
