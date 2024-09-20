@@ -38,6 +38,7 @@ const QuestionComponent: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [score, setScore] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const query = useQuery();
   const mode = query.get("mode") || "Practice";
@@ -53,17 +54,20 @@ const QuestionComponent: React.FC = () => {
     const newSelectedAnswers = [...selectedAnswers];
     newSelectedAnswers[currentQuestion - 1] = answer;
     setSelectedAnswers(newSelectedAnswers);
+    setShowFeedback(true);
   };
 
   const handleNext = () => {
     if (currentQuestion < questions.length) {
       setCurrentQuestion((prev) => prev + 1);
+      setShowFeedback(false);
     }
   };
 
   const handlePrev = () => {
     if (currentQuestion > 1) {
       setCurrentQuestion((prev) => prev - 1);
+      setShowFeedback(false);
     }
   };
 
@@ -76,6 +80,8 @@ const QuestionComponent: React.FC = () => {
   };
 
   const handleConfirmSubmit = () => {
+    // Here you can handle the submission, e.g., send the score to a server
+    console.log(`Final Score: ${score} out of ${questions.length}`);
     navigate(`/result/${mode}/${Class}`, { state: { score, totalQuestions: questions.length } });
   };
 
@@ -85,35 +91,6 @@ const QuestionComponent: React.FC = () => {
     }, 0);
     setScore(newScore);
   };
-
-  const getQuestionColor = (questionId: number) => {
-    const selectedAnswer = selectedAnswers[questionId - 1];
-    const correctAnswer = questions[questionId - 1].correctAnswer;
-  
-    // Only check the answer in Practice mode
-    if (mode === "Practice" && selectedAnswer !== null) {
-      // Green if correct, red if wrong
-      return selectedAnswer === correctAnswer ? 'success' : 'error';
-    }
-  
-    // Default outline when unanswered
-    return 'inherit';
-  };
-
-  const getButtonStyles = (questionId:any) => {
-    const selectedAnswer = selectedAnswers[questionId - 1];
-    const correctAnswer = questions[questionId - 1].correctAnswer;
-
-    if (mode === "Practice" && selectedAnswer !== null) {
-      if (selectedAnswer === correctAnswer) {
-        return { backgroundColor: 'green', color: 'white' }; // Green for correct
-      } else {
-        return { backgroundColor: 'red', color: 'white' };   // Red for incorrect
-      }
-    }
-    return {}; // Default style for unanswered or other modes
-  };
-  
 
   const currentQuestionData = questions[currentQuestion - 1];
 
@@ -130,26 +107,34 @@ const QuestionComponent: React.FC = () => {
           </Button>
 
           <Box sx={{ width: '70%', height: '80%', padding: '5px', marginY:'20px', border: '2px solid #5C5FC7', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '5px' }}>
-              Question {currentQuestionData.id}
-            </Typography>
-            <Typography sx={{ marginBottom: '5px' }}>{currentQuestionData.text}</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '5px' }}>
+            Question {currentQuestionData.id}
+          </Typography>
+          <Typography sx={{ marginBottom: '5px' }}>{currentQuestionData.text}</Typography>
 
-            <Grid container spacing={2}>
-              {currentQuestionData.options.map((answer) => (
-                <Grid item xs={6} key={answer}>
-                  <Button
-                    variant={selectedAnswers[currentQuestion - 1] === answer ? 'contained' : 'outlined'}
-                    color={selectedAnswers[currentQuestion - 1] === answer ? 'primary' : 'inherit'}
-                    onClick={() => handleAnswerClick(answer)}
-                    fullWidth
-                  >
-                    {answer}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
+          <Grid container spacing={2}>
+            {currentQuestionData.options.map((answer) => (
+              <Grid item xs={6} key={answer}>
+                <Button
+                  variant={selectedAnswers[currentQuestion - 1] === answer ? 'contained' : 'outlined'}
+                  color={
+                    mode === "Practice Test" && showFeedback && selectedAnswers[currentQuestion - 1] === answer
+                      ? answer === currentQuestionData.correctAnswer
+                        ? 'success'
+                        : 'error'
+                      : selectedAnswers[currentQuestion - 1] === answer
+                      ? 'primary'
+                      : 'inherit'
+                  }
+                  onClick={() => handleAnswerClick(answer)}
+                  fullWidth
+                >
+                  {answer}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
 
           <Button variant="contained" color="primary" onClick={handleNext} sx={{ minWidth: { xs: '30px', sm: '30px', md: '50px' }, height: { xs: '30px', sm: '30px', md: '50px' }, borderRadius: '50%', padding:'0px' }}>
             <ArrowForwardIcon />
@@ -159,19 +144,28 @@ const QuestionComponent: React.FC = () => {
         <Box sx={{ display: 'flex', flexWrap:'wrap', justifyContent: 'center', gap: '10px', marginTop: '10px', padding: '10px' }}>
           {questions.map((question) => (
             <Button
-            key={question.id}
-            variant={currentQuestion === question.id ? 'contained' : 'outlined'}
-            onClick={() => setCurrentQuestion(question.id)} // Navigate between questions
-            sx={{
-              minWidth: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              fontWeight: 'bold',
-              ...getButtonStyles(question.id),  // Apply dynamic styles here
-            }}
-          >
-            {question.id}
-          </Button>
+              key={question.id}
+              variant={currentQuestion === question.id ? 'contained' : 'outlined'}
+              color={
+                mode === "Practice" && selectedAnswers[question.id - 1] !== null
+                  ? selectedAnswers[question.id - 1] === question.correctAnswer
+                    ? 'success'
+                    : 'error'
+                  : currentQuestion === question.id
+                  ? 'primary'
+                  : 'inherit'
+              }
+              onClick={() => setCurrentQuestion(question.id)}
+              sx={{
+                minWidth: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                fontWeight: 'bold',
+                color: currentQuestion === question.id ? '#fff' : 'inherit',
+              }}
+            >
+              {question.id}
+            </Button>
           ))}
         </Box>
 
@@ -195,6 +189,9 @@ const QuestionComponent: React.FC = () => {
           </Box>
 
           <DialogTitle sx={{ textAlign: 'center' }}>Are you sure you want to submit?</DialogTitle>
+          <Typography sx={{ textAlign: 'center', marginBottom: '20px' }}>
+            Your current score: {score} out of {questions.length}
+          </Typography>
 
           <DialogActions sx={{ justifyContent: 'space-around' }}>
             <Button onClick={handleCloseDialog} color="error">No</Button>
