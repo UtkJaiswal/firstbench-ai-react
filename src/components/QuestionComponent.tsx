@@ -188,45 +188,59 @@ const questions: Question[] = [
       );
     };
   
-return (
-  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#5C5FC7', padding: '20px' }}>
-    <Card sx={{ width: "95vw", height: { xs: '80vh', sm: '60vh', md: '90vh' }, padding: '30px', backgroundColor: '#fff', borderRadius: '20px', position: 'relative', display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-      
-      {submitted && (
-        <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
-          Your Score: {score} out of {questions.length}
-        </Typography>
-      )}
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#5C5FC7', padding: '20px' }}>
+        <Card sx={{ width: "95vw", height: { xs: '80vh', sm: '60vh', md: '90vh' }, padding: '30px', backgroundColor: '#fff', borderRadius: '20px', position: 'relative', display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+          
+          {submitted && (
+            <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
+              Your Score: {score} out of {questions.length}
+            </Typography>
+          )}
 
-      {!submitted && mode === "Practice Test" && (
-        <Box sx={{ height: "80vh", width: "80vw", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={handlePrev} 
-            sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
-          >
-            <ArrowBackIcon />
-          </Button>
+          {!submitted && mode === "Practice Test" && (
+            <Box sx={{ height: "80vh", width: "80vw", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handlePrev} 
+                sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
+              >
+                <ArrowBackIcon />
+              </Button>
 
-          {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
+              {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
 
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={handleNext} 
-            disabled={currentQuestion === questions.length} 
-            sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
-          >
-            <ArrowForwardIcon />
-          </Button>
-        </Box>
-      )}
+              <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handleNext} 
+                disabled={currentQuestion === questions.length} 
+                sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
+              >
+                <ArrowForwardIcon />
+              </Button>
+            </Box>
+          )}
 
-      {(!submitted && mode !== "Practice Test") || submitted ? (
-        <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
-          {questions.map((question, index) => renderQuestion(question, index))}
-          {!submitted && mode !== "Practice Test" && (
+          {(!submitted && mode !== "Practice Test") || submitted ? (
+            <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
+              {questions.map((question, index) => renderQuestion(question, index))}
+              {!submitted && mode !== "Practice Test" && (
+                <Button 
+                  variant="contained" 
+                  color="success" 
+                  sx={{ width: "20%", marginTop: '20px', fontSize: '1.25rem', padding: '15px 20px' }} 
+                  onClick={handleConfirmSubmit}
+                >
+                  Submit
+                </Button>
+              )}
+            </Box>
+          ) : null}
+
+          {/* Submit button for Practice Test on the last question */}
+          {!submitted && mode === "Practice Test" && currentQuestion === questions.length && (
             <Button 
               variant="contained" 
               color="success" 
@@ -236,36 +250,22 @@ return (
               Submit
             </Button>
           )}
-        </Box>
-      ) : null}
 
-      {/* Submit button for Practice Test on the last question */}
-      {!submitted && mode === "Practice Test" && currentQuestion === questions.length && (
-        <Button 
-          variant="contained" 
-          color="success" 
-          sx={{ width: "20%", marginTop: '20px', fontSize: '1.25rem', padding: '15px 20px' }} 
-          onClick={handleConfirmSubmit}
-        >
-          Submit
-        </Button>
-      )}
-
-      <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
-        <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmSubmit} color="secondary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Card>
-  </Box>
-);
+          <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
+            <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
+            <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="primary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmSubmit} color="secondary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
+                Submit
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Card>
+      </Box>
+    );
 
 
 
