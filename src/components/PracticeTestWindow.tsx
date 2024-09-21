@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Typography, Button, Box } from '@mui/material';
+import { Card, Typography, Button, Box, IconButton } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 
 interface PracticeTestWindowProps {
@@ -7,14 +8,17 @@ interface PracticeTestWindowProps {
 }
 
 const PracticeTestWindow: React.FC<PracticeTestWindowProps> = ({ Class }) => {
-
-  const navigate = useNavigate()
-  const mode = 'Practice Test'
-
+  const navigate = useNavigate();
+  const mode = 'Practice Test';
 
   const handleStartTest = () => {
-    navigate(`/questions?mode=${mode}&class=${Class}`)
-  }
+    navigate(`/questions?mode=${mode}&class=${Class}`);
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Navigate to the previous page
+  };
+
   return (
     <Box
       sx={{
@@ -38,10 +42,21 @@ const PracticeTestWindow: React.FC<PracticeTestWindowProps> = ({ Class }) => {
           justifyContent: "space-around",
           alignItems: "center",
           position: "relative",
-
-
         }}
       >
+        {/* Back Button */}
+        <IconButton
+          onClick={handleBack}
+          sx={{
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            color: 'primary.main',
+          }}
+        >
+          <ArrowBack />
+        </IconButton>
+
         <Typography variant="h5" sx={{ marginBottom: '20px', fontWeight: 'bold' }}>
           Practice Test
         </Typography>
@@ -54,13 +69,17 @@ const PracticeTestWindow: React.FC<PracticeTestWindowProps> = ({ Class }) => {
           Total 45 Questions
         </Typography>
 
-        <Button variant="contained" color="primary" size="large"
+        <Button 
+          variant="contained" 
+          color="primary" 
+          size="large"
           sx={{
             position: 'absolute',
             bottom: 20,
-            right: 20
+            right: 20,
           }}
-          onClick={handleStartTest}>
+          onClick={handleStartTest}
+        >
           Start
         </Button>
       </Card>

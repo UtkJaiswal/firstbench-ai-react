@@ -100,6 +100,9 @@ const questions: Question[] = [
     navigate(-1); // This will navigate back to the last page in the history
   }
 };
+const handleBackClick = () => {
+  navigate(-1);
+};
   
     const handleSubmitClick = () => {
       setIsSubmitDialogOpen(true);
@@ -192,12 +195,26 @@ const questions: Question[] = [
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#5C5FC7', padding: '20px' }}>
         <Card sx={{ width: "95vw", height: { xs: '80vh', sm: '60vh', md: '90vh' }, padding: '30px', backgroundColor: '#fff', borderRadius: '20px', position: 'relative', display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           
-          {submitted && (
-            <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
-              Your Score: {score} out of {questions.length}
-            </Typography>
-          )}
-
+        {submitted && (
+        <Box sx={{ width: "100%", display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start', marginBottom: '20px' }}>
+          <Button onClick={handleBackClick} sx={{ marginRight: '10px', minWidth: '40px' }}>
+            <ArrowBackIcon />
+          </Button>
+          <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
+            Your Score: {score} out of {questions.length}
+          </Typography>
+          {/* Back button for post submission */}
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleBackClick} 
+            sx={{ marginLeft: 'auto', minWidth: '100px' }}
+          >
+            Go Back
+          </Button>
+        </Box>
+      )}
+  
           {!submitted && mode === "Practice Test" && (
             <Box sx={{ height: "80vh", width: "80vw", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Button 
@@ -208,9 +225,9 @@ const questions: Question[] = [
               >
                 <ArrowBackIcon />
               </Button>
-
+  
               {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
-
+  
               <Button 
                 variant="contained" 
                 color="primary" 
@@ -222,7 +239,7 @@ const questions: Question[] = [
               </Button>
             </Box>
           )}
-
+  
           {(!submitted && mode !== "Practice Test") || submitted ? (
             <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
               {questions.map((question, index) => renderQuestion(question, index))}
@@ -238,7 +255,7 @@ const questions: Question[] = [
               )}
             </Box>
           ) : null}
-
+  
           {/* Submit button for Practice Test on the last question */}
           {!submitted && mode === "Practice Test" && currentQuestion === questions.length && (
             <Button 
@@ -250,7 +267,7 @@ const questions: Question[] = [
               Submit
             </Button>
           )}
-
+  
           <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
             <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
             <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
@@ -266,6 +283,7 @@ const questions: Question[] = [
         </Card>
       </Box>
     );
+  
 
 
 
