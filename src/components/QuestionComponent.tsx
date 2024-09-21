@@ -63,206 +63,214 @@ const questions: Question[] = [
     { id: 45, text: "Who was the first woman to fly solo across the Atlantic Ocean?", options: ["A. Amelia Earhart", "B. Bessie Coleman", "C. Harriet Quimby", "D. Jacqueline Cochran"], correctAnswer: "A. Amelia Earhart" }]
 
 
-    const QuestionComponent: React.FC = () => {
-      const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>(new Array(questions.length).fill(null));
-      const [currentQuestion, setCurrentQuestion] = useState(1);
-      const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
-      const [score, setScore] = useState(0);
-      const [submitted, setSubmitted] = useState(false);
-    
-      const query = useQuery();
-      const mode = query.get("mode") || "Practice";
-      const Class = query.get("class");
-    
-      const navigate = useNavigate();
-    
-      useEffect(() => {
-        calculateScore();
-      }, [selectedAnswers]);
-    
-      const handleAnswerClick = (answer: string, index: number) => {
-        const newSelectedAnswers = [...selectedAnswers];
-        newSelectedAnswers[index] = answer;
-        setSelectedAnswers(newSelectedAnswers);
-      };
-    
-      const handleNext = () => {
-        if (currentQuestion < questions.length) {
-          setCurrentQuestion((prev) => prev + 1);
-        }
-      };
-    
-      const handlePrev = () => {
-        if (currentQuestion > 1) {
-          setCurrentQuestion((prev) => prev - 1);
-        }
-      };
-    
-      const handleSubmitClick = () => {
-        setIsSubmitDialogOpen(true);
-      };
-    
-      const handleCloseDialog = () => {
-        setIsSubmitDialogOpen(false);
-      };
-    
-      const handleConfirmSubmit = () => {
-        setSubmitted(true);
-        calculateScore();
-        setIsSubmitDialogOpen(false);
-      };
-    
-      const calculateScore = () => {
-        const newScore = selectedAnswers.reduce((acc, answer, index) => {
-          return answer === questions[index].correctAnswer ? acc + 1 : acc;
-        }, 0);
-        setScore(newScore);
-      };
-    
-      const getOptionStyle = (answer: string, index: number) => {
-        const selectedAnswer = selectedAnswers[index];
-        const correctAnswer = questions[index].correctAnswer;
-    
-        const darkTextColor = '#000000';
-    
-        if (mode === "Practice Test") {
-          if (selectedAnswer) {
-            if (answer === correctAnswer) {
-              return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
-            }
-            if (answer === selectedAnswer && answer !== correctAnswer) {
-              return { backgroundColor: 'red', color: darkTextColor, fontWeight: 'bold' };
-            }
-          }
-        } else if (!submitted) {
-          if (answer === selectedAnswer) {
-            return { backgroundColor: 'blue', color: 'white', fontWeight: 'bold' };
-          }
-        } if (submitted) {
+  const QuestionComponent: React.FC = () => {
+    const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>(new Array(questions.length).fill(null));
+    const [currentQuestion, setCurrentQuestion] = useState(1);
+    const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+    const [score, setScore] = useState(0);
+    const [submitted, setSubmitted] = useState(false);
+  
+    const query = useQuery();
+    const mode = query.get("mode") || "Practice";
+    const Class = query.get("class");
+  
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+      calculateScore();
+    }, [selectedAnswers]);
+  
+    const handleAnswerClick = (answer: string, index: number) => {
+      const newSelectedAnswers = [...selectedAnswers];
+      newSelectedAnswers[index] = answer;
+      setSelectedAnswers(newSelectedAnswers);
+    };
+  
+    const handleNext = () => {
+      if (currentQuestion < questions.length) {
+        setCurrentQuestion((prev) => prev + 1);
+      }
+    };
+  
+    const handlePrev = () => {
+  if (currentQuestion > 1) {
+    setCurrentQuestion((prev) => prev - 1);
+  } else {
+    // Redirect to the previous page
+    navigate(-1); // This will navigate back to the last page in the history
+  }
+};
+  
+    const handleSubmitClick = () => {
+      setIsSubmitDialogOpen(true);
+    };
+  
+    const handleCloseDialog = () => {
+      setIsSubmitDialogOpen(false);
+    };
+  
+    const handleConfirmSubmit = () => {
+      setSubmitted(true);
+      calculateScore();
+      setIsSubmitDialogOpen(false);
+    };
+  
+    const calculateScore = () => {
+      const newScore = selectedAnswers.reduce((acc, answer, index) => {
+        return answer === questions[index].correctAnswer ? acc + 1 : acc;
+      }, 0);
+      setScore(newScore);
+    };
+  
+    const getOptionStyle = (answer: string, index: number) => {
+      const selectedAnswer = selectedAnswers[index];
+      const correctAnswer = questions[index].correctAnswer;
+  
+      // Using pure black for dark text color on colored backgrounds
+      const darkTextColor = '#000000';
+  
+      if (mode === "Practice Test") {
+        if (selectedAnswer) {
+          // Show immediate feedback in Practice Test mode once an answer is selected
           if (answer === correctAnswer) {
             return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
           }
           if (answer === selectedAnswer && answer !== correctAnswer) {
             return { backgroundColor: 'red', color: darkTextColor, fontWeight: 'bold' };
           }
-          if (selectedAnswer === null && answer === correctAnswer) {
-            return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
-          }
         }
-    
-        return { backgroundColor: 'transparent', color: darkTextColor, fontWeight: 'normal' };
-      };
-    
-      const renderQuestion = (question: Question, index: number) => {
-        return (
-          <Box key={question.id} sx={{ marginBottom: '30px' }}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '10px' }}>
-              Question {question.id}
-            </Typography>
-            <Typography sx={{ fontSize: '1.5rem', marginBottom: '15px' }}>{question.text}</Typography>
-    
-            <Grid container spacing={3}>
-              {question.options.map((answer) => (
-                <Grid item xs={6} key={answer}>
-                  <Button
-                    variant="outlined"
-                    sx={{ ...getOptionStyle(answer, index), fontSize: '1.25rem', padding: '15px 20px' }}
-                    onClick={() => handleAnswerClick(answer, index)}
-                    fullWidth
-                    disabled={submitted || (mode === "Practice Test" && selectedAnswers[index] !== null)}
-                  >
-                    {answer}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        );
-      };
-    
+      } else if (!submitted) {
+        // For other modes, only highlight the selected answer in blue before submission
+        if (answer === selectedAnswer) {
+          return { backgroundColor: 'blue', color: 'white', fontWeight: 'bold' };
+        }
+      } if(submitted) {
+        // After submission, show correct and incorrect answers
+        if (answer === correctAnswer) {
+          return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
+        }
+        if (answer === selectedAnswer && answer !== correctAnswer) {
+          return { backgroundColor: 'red', color: darkTextColor, fontWeight: 'bold' };
+        }
+        // Highlight the correct answer if it was not selected at all
+        if (selectedAnswer === null && answer === correctAnswer) {
+          return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
+        }
+      }
+  
+      return { backgroundColor: 'transparent', color: darkTextColor, fontWeight: 'normal' };
+    };
+  
+    const renderQuestion = (question: Question, index: number) => {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#5C5FC7', padding: '20px' }}>
-          <Card sx={{ width: "95vw", height: { xs: '80vh', sm: '60vh', md: '90vh' }, padding: '30px', backgroundColor: '#fff', borderRadius: '20px', position: 'relative', display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-      
-            {submitted && (
-              <Typography sx={{ fontSize: '1.5rem', fontWeight: 'bold', position: 'absolute', top: '10px', textAlign: 'center' }}>
-                Your score: {score} out of {questions.length}
-              </Typography>
-            )}
-      
-            {mode === "Practice Test" && !submitted ? (
-              <Box sx={{ height: "80vh", width: "80vw", display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Button variant="contained" color="primary" onClick={handlePrev} disabled={currentQuestion === 1} sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-                    <ArrowBackIcon />
-                  </Button>
-      
-                  <Typography sx={{ fontSize: '1.5rem' }}>
-                    {`Question ${currentQuestion} of ${questions.length}`}
-                  </Typography>
-      
-                  <Button variant="contained" color="primary" onClick={handleNext} disabled={currentQuestion === questions.length} sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-                    <ArrowForwardIcon />
-                  </Button>
-                </Box>
-      
-                {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
-      
-                {currentQuestion === questions.length && (
-                  <Button 
-                    variant="contained" 
-                    color="success" 
-                    sx={{ mt: 3, fontSize: '1.25rem', padding: '15px 20px' }} 
-                    onClick={handleConfirmSubmit}
-                  >
-                    Submit
-                  </Button>
-                )}
-              </Box>
-            ) : null}
-      
-            {(!submitted && mode !== "Practice Test") || submitted ? (
-              <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={() => navigate('/')}
-                  sx={{ mb: 2, fontSize: '1.25rem', padding: '15px 20px' }}
+        <Box key={question.id} sx={{ marginBottom: '30px' }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '10px' }}>
+            Question {question.id}
+          </Typography>
+          <Typography sx={{ fontSize: '1.5rem', marginBottom: '15px' }}>{question.text}</Typography>
+  
+          <Grid container spacing={3}>
+            {question.options.map((answer) => (
+              <Grid item xs={6} key={answer}>
+                <Button
+                  variant="outlined"
+                  sx={{ ...getOptionStyle(answer, index), fontSize: '1.25rem', padding: '15px 20px' }}
+                  onClick={() => handleAnswerClick(answer, index)}
+                  fullWidth
+                  disabled={submitted || (mode === "Practice Test" && selectedAnswers[index] !== null)}
                 >
-                  <ArrowBackIcon />
+                  {answer}
                 </Button>
-                {questions.map((question, index) => renderQuestion(question, index))}
-      
-                {!submitted && (
-                  <Button 
-                    variant="contained" 
-                    color="success" 
-                    sx={{ mt: 3, fontSize: '1.25rem', padding: '15px 20px' }} 
-                    onClick={handleConfirmSubmit}
-                  >
-                    Submit
-                  </Button>
-                )}
-              </Box>
-            ) : null}
-      
-            <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
-              <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
-              <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
-              <DialogActions>
-                <Button onClick={handleCloseDialog} color="primary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-                  Cancel
-                </Button>
-                <Button onClick={handleConfirmSubmit} color="secondary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
-                  Submit
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       );
-      
-      
     };
-    
-    export default QuestionComponent;
+  
+return (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#5C5FC7', padding: '20px' }}>
+    <Card sx={{ width: "95vw", height: { xs: '80vh', sm: '60vh', md: '90vh' }, padding: '30px', backgroundColor: '#fff', borderRadius: '20px', position: 'relative', display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      
+      {submitted && (
+        <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
+          Your Score: {score} out of {questions.length}
+        </Typography>
+      )}
+
+      {!submitted && mode === "Practice Test" && (
+        <Box sx={{ height: "80vh", width: "80vw", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handlePrev} 
+            sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
+          >
+            <ArrowBackIcon />
+          </Button>
+
+          {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
+
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleNext} 
+            disabled={currentQuestion === questions.length} 
+            sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
+          >
+            <ArrowForwardIcon />
+          </Button>
+        </Box>
+      )}
+
+      {(!submitted && mode !== "Practice Test") || submitted ? (
+        <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
+          {questions.map((question, index) => renderQuestion(question, index))}
+          {!submitted && mode !== "Practice Test" && (
+            <Button 
+              variant="contained" 
+              color="success" 
+              sx={{ width: "20%", marginTop: '20px', fontSize: '1.25rem', padding: '15px 20px' }} 
+              onClick={handleConfirmSubmit}
+            >
+              Submit
+            </Button>
+          )}
+        </Box>
+      ) : null}
+
+      {/* Submit button for Practice Test on the last question */}
+      {!submitted && mode === "Practice Test" && currentQuestion === questions.length && (
+        <Button 
+          variant="contained" 
+          color="success" 
+          sx={{ width: "20%", marginTop: '20px', fontSize: '1.25rem', padding: '15px 20px' }} 
+          onClick={handleConfirmSubmit}
+        >
+          Submit
+        </Button>
+      )}
+
+      <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
+        <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmSubmit} color="secondary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Card>
+  </Box>
+);
+
+
+
+
+
+  };
+  
+  export default QuestionComponent;
