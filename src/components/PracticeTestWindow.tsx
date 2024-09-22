@@ -1,24 +1,136 @@
 import React, { useState } from 'react';
-import { Card, Typography, Button, Box, IconButton } from '@mui/material';
+import { Card, Typography, Button, Box, IconButton, CircularProgress } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import QuestionComponent from './QuestionComponent';
 
 interface PracticeTestWindowProps {
   Class: string;  // Replace 'string' with the appropriate type for 'Class'
+}
+
+interface ComprehensionOption {
+  [key: string]: string;
+}
+
+interface ComprehensionQuestionAndOption {
+  question: string;
+  options: ComprehensionOption;
+}
+
+interface ComprehensionQuestion {
+  _id: string;
+  comprehension: string;
+  questions: ComprehensionQuestionAndOption[];
+  correctAnswers: string[];
+  explanations: string[];
+}
+
+interface NormalOption {
+  [key: string]: string;
+}
+
+interface NormalQuestion {
+  _id: string;
+  question: string;
+  options: NormalOption;
+  correctAnswer: string;
+  explanation: string;
 }
 
 const PracticeTestWindow: React.FC<PracticeTestWindowProps> = ({ Class }) => {
   const navigate = useNavigate();
   const mode = 'Practice Test';
 
-  const handleStartTest = () => {
-    navigate(`/questions?mode=${mode}&class=${Class}`);
+  const [comprehensionQuestions, setComprehensionQuestions] = useState<ComprehensionQuestion[]>([]);
+  const [normalQuestions, setNormalQuestions] = useState<NormalQuestion[]>([]);
+  const [testStarted, setTestStarted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleStartTest = async () => {
+    setLoading(true);
+    try {
+      await fetchQuestions();
+      setTestStarted(true);
+    } catch (err) {
+      console.error("Error in handleStartTest:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBack = () => {
     navigate(-1); // Navigate to the previous page
   };
 
+  const fetchQuestions = async () => {
+    try {
+      const grade: String = Class;
+      const subjects = ["English", "EVS", "Mathematics"];
+      let allNormalQuestions: NormalQuestion[] = [];
+      let allComprehensionQuestions: ComprehensionQuestion[] = [];
+
+      for (const subject of subjects) {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL
+        const response = await axios.post(`${backendUrl}/questions/`, {
+          grade,
+          subject,
+        });
+
+        if (subject === "English") {
+          const newComprehensionQuestions = response.data.map((comprehension: any) => ({
+            _id: comprehension._id,
+            comprehension: comprehension.comprehension,
+            correctAnswers: comprehension.correctAnswers,
+            explanations: comprehension.explanations,
+            questions: comprehension.questions.map((q: any) => ({
+              question: q.question,
+              options: q.options,
+            })),
+          }));
+          allComprehensionQuestions = [...allComprehensionQuestions, ...newComprehensionQuestions];
+        } else {
+          const newNormalQuestions = response.data.map((question: any) => ({
+            _id: question._id,
+            question: question.question,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            explanation: question.explanation
+          }));
+          allNormalQuestions = [...allNormalQuestions, ...newNormalQuestions];
+        }
+      }
+
+      setComprehensionQuestions(allComprehensionQuestions);
+      setNormalQuestions(allNormalQuestions);
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (testStarted) {
+    // Check if questions are ready to be rendered
+    if (loading) {
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    return (
+      <QuestionComponent
+        mode={mode}
+        Class={Class}
+        normalQuestions={normalQuestions}
+        comprehensionQuestions={comprehensionQuestions}
+      />
+    );
+  }
+
+  
   return (
     <Box
       sx={{

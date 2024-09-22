@@ -22,7 +22,7 @@ const Questions = () => {
 
   return (
     <div>
-      <QuestionComponent />
+      {/* <QuestionComponent /> */}
     </div>
   )
 }

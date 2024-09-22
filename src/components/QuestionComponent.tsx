@@ -4,81 +4,110 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
 interface Question {
-  id: number;
-  text: string;
-  options: string[];
+  _id: string;
+  question: string;
+  options: {
+    [key: string]: string;
+  };
   correctAnswer: string;
+  explanation:string;
+  type:string;
+  comprehension: string;
 }
 
-const questions: Question[] = [
-  { id: 1, text: "What is the capital of France?", options: ["A. London", "B. Berlin", "C. Paris", "D. Madrid"], correctAnswer: "C. Paris" },
-  { id: 2, text: "Which planet is known as the Red Planet?", options: ["A. Venus", "B. Mars", "C. Jupiter", "D. Saturn"], correctAnswer: "B. Mars" },
-  { id: 3, text: "Who painted the famous artwork 'The Starry Night'?", options: ["A. Leonardo da Vinci", "B. Vincent van Gogh", "C. Claude Monet", "D. Pablo Picasso"], correctAnswer: "B. Vincent van Gogh" },
-  { id: 4, text: "What is the chemical symbol for gold?", options: ["A. Ag", "B. Au", "C. Hg", "D. Pb"], correctAnswer: "B. Au" },
-  { id: 5, text: "Which author wrote 'To Kill a Mockingbird'?", options: ["A. F. Scott Fitzgerald", "B. Harper Lee", "C. Jane Austen", "D. J.K. Rowling"], correctAnswer: "B. Harper Lee" },
-  { id: 6, text: "What is the largest mammal on Earth?", options: ["A. Elephant", "B. Blue whale", "C. Hippopotamus", "D. Rhinoceros"], correctAnswer: "B. Blue whale" },
-  { id: 7, text: "Which musician is known as the 'King of Rock and Roll'?", options: ["A. Chuck Berry", "B. Elvis Presley", "C. Little Richard", "D. Jerry Lee Lewis"], correctAnswer: "B. Elvis Presley" },
-  { id: 8, text: "What is the smallest country in the world?", options: ["A. Vatican City", "B. Monaco", "C. Nauru", "D. Tuvalu"], correctAnswer: "A. Vatican City" },
-  { id: 9, text: "Who was the first president of the United States?", options: ["A. George Washington", "B. Thomas Jefferson", "C. Abraham Lincoln", "D. Franklin D. Roosevelt"], correctAnswer: "A. George Washington" },
-  { id: 10, text: "What is the highest mountain peak in the solar system?", options: ["A. Mount Everest", "B. Olympus Mons", "C. Denali", "D. Kilimanjaro"], correctAnswer: "B. Olympus Mons" },
-  { id: 11, text: "Which element is the lightest in the periodic table?", options: ["A. Hydrogen", "B. Helium", "C. Oxygen", "D. Nitrogen"], correctAnswer: "A. Hydrogen" },
-  { id: 12, text: "Who wrote the famous novel '1984'?", options: ["A. George Orwell", "B. Aldous Huxley", "C. Ray Bradbury", "D. Joseph Heller"], correctAnswer: "A. George Orwell" },
-  { id: 13, text: "What is the largest living species of lizard?", options: ["A. Komodo dragon", "B. Saltwater crocodile", "C. Black mamba", "D. Green anaconda"], correctAnswer: "A. Komodo dragon" },
-  { id: 14, text: "Which artist created the famous sculpture 'David'?", options: ["A. Michelangelo", "B. Leonardo da Vinci", "C. Raphael", "D. Donatello"], correctAnswer: "A. Michelangelo" },
-  { id: 15, text: "What is the process by which plants convert sunlight into energy?", options: ["A. Respiration", "B. Photosynthesis", "C. Decomposition", "D. Fermentation"], correctAnswer: "B. Photosynthesis" },
-  { id: 16, text: "What is the capital of Japan?", options: ["A. Seoul", "B. Beijing", "C. Tokyo", "D. Bangkok"], correctAnswer: "C. Tokyo" },
-  { id: 17, text: "Which gas do plants absorb from the atmosphere?", options: ["A. Oxygen", "B. Carbon Dioxide", "C. Nitrogen", "D. Helium"], correctAnswer: "B. Carbon Dioxide" },
-  { id: 18, text: "What is the hardest natural substance on Earth?", options: ["A. Gold", "B. Iron", "C. Diamond", "D. Sapphire"], correctAnswer: "C. Diamond" },
-  { id: 19, text: "Which ocean is the largest?", options: ["A. Atlantic", "B. Indian", "C. Arctic", "D. Pacific"], correctAnswer: "D. Pacific" },
-  { id: 20, text: "Who discovered penicillin?", options: ["A. Marie Curie", "B. Alexander Fleming", "C. Louis Pasteur", "D. Isaac Newton"], correctAnswer: "B. Alexander Fleming" },
-  { id: 21, text: "What is the tallest building in the world?", options: ["A. Taipei 101", "B. Burj Khalifa", "C. One World Trade Center", "D. Willis Tower"], correctAnswer: "B. Burj Khalifa" },
-  { id: 22, text: "Which animal is known as the 'Ship of the Desert'?", options: ["A. Horse", "B. Camel", "C. Elephant", "D. Donkey"], correctAnswer: "B. Camel" },
-  { id: 23, text: "What is the capital city of Australia?", options: ["A. Sydney", "B. Melbourne", "C. Canberra", "D. Brisbane"], correctAnswer: "C. Canberra" },
-  { id: 24, text: "Which planet is known for its rings?", options: ["A. Jupiter", "B. Saturn", "C. Neptune", "D. Uranus"], correctAnswer: "B. Saturn" },
-  { id: 25, text: "In which year did the Titanic sink?", options: ["A. 1912", "B. 1905", "C. 1915", "D. 1920"], correctAnswer: "A. 1912" },
-  { id: 26, text: "What is the main ingredient in guacamole?", options: ["A. Tomato", "B. Avocado", "C. Onion", "D. Pepper"], correctAnswer: "B. Avocado" },
-  { id: 27, text: "Who is known as the Father of Geometry?", options: ["A. Euclid", "B. Pythagoras", "C. Archimedes", "D. Descartes"], correctAnswer: "A. Euclid" },
-  { id: 28, text: "Which famous scientist developed the theory of relativity?", options: ["A. Isaac Newton", "B. Albert Einstein", "C. Galileo Galilei", "D. Nikola Tesla"], correctAnswer: "B. Albert Einstein" },
-  { id: 29, text: "What is the main language spoken in Brazil?", options: ["A. Spanish", "B. English", "C. Portuguese", "D. French"], correctAnswer: "C. Portuguese" },
-  { id: 30, text: "What is the largest continent on Earth?", options: ["A. Africa", "B. Asia", "C. North America", "D. Antarctica"], correctAnswer: "B. Asia" },
-  { id: 31, text: "Who wrote the play 'Romeo and Juliet'?", options: ["A. Charles Dickens", "B. William Shakespeare", "C. Mark Twain", "D. Jane Austen"], correctAnswer: "B. William Shakespeare" },
-  { id: 32, text: "What is the boiling point of water?", options: ["A. 90°C", "B. 100°C", "C. 120°C", "D. 150°C"], correctAnswer: "B. 100°C" },
-  { id: 33, text: "Which planet is closest to the sun?", options: ["A. Venus", "B. Earth", "C. Mercury", "D. Mars"], correctAnswer: "C. Mercury" },
-  { id: 34, text: "What is the currency of Japan?", options: ["A. Yen", "B. Dollar", "C. Euro", "D. Peso"], correctAnswer: "A. Yen" },
-  { id: 35, text: "What is the largest organ in the human body?", options: ["A. Heart", "B. Brain", "C. Skin", "D. Liver"], correctAnswer: "C. Skin" },
-  { id: 36, text: "Which planet is known for its Great Red Spot?", options: ["A. Venus", "B. Jupiter", "C. Saturn", "D. Neptune"], correctAnswer: "B. Jupiter" },
-  { id: 37, text: "What is the capital of Italy?", options: ["A. Rome", "B. Milan", "C. Venice", "D. Florence"], correctAnswer: "A. Rome" },
-  { id: 38, text: "What is the longest river in the world?", options: ["A. Amazon", "B. Nile", "C. Yangtze", "D. Mississippi"], correctAnswer: "B. Nile" },
-    { id: 39, text: "Which vitamin is primarily obtained from sunlight?", options: ["A. Vitamin A", "B. Vitamin B12", "C. Vitamin C", "D. Vitamin D"], correctAnswer: "D. Vitamin D" },
-    { id: 40, text: "What is the main language spoken in Egypt?", options: ["A. Arabic", "B. French", "C. English", "D. Spanish"], correctAnswer: "A. Arabic" },
-    { id: 41, text: "Who wrote the famous book 'Pride and Prejudice'?", options: ["A. Charlotte Brontë", "B. Jane Austen", "C. Emily Dickinson", "D. Louisa May Alcott"], correctAnswer: "B. Jane Austen" },
-    { id: 42, text: "What is the currency of the European Union?", options: ["A. Pound", "B. Dollar", "C. Euro", "D. Franc"], correctAnswer: "C. Euro" },
-    { id: 43, text: "What is the most widely spoken language in the world?", options: ["A. English", "B. Mandarin Chinese", "C. Spanish", "D. Hindi"], correctAnswer: "B. Mandarin Chinese" },
-    { id: 44, text: "Which planet has the most moons?", options: ["A. Earth", "B. Mars", "C. Jupiter", "D. Saturn"], correctAnswer: "C. Jupiter" },
-    { id: 45, text: "Who was the first woman to fly solo across the Atlantic Ocean?", options: ["A. Amelia Earhart", "B. Bessie Coleman", "C. Harriet Quimby", "D. Jacqueline Cochran"], correctAnswer: "A. Amelia Earhart" }]
+interface ComprehensionOption {
+  [key: string]: string;
+}
+
+interface ComprehensionQuestionAndOption {
+  question: string;
+  options: ComprehensionOption;
+}
+
+interface ComprehensionQuestion {
+  _id: string;
+  comprehension: string;
+  questions: ComprehensionQuestionAndOption[];
+  correctAnswers: string[];
+  explanations: string[];
+}
+
+interface NormalOption {
+  [key: string]: string;
+}
+
+interface NormalQuestion {
+  _id: string;
+  question: string;
+  options: NormalOption;
+  correctAnswer: string;
+  explanation: string;
+}
+
+interface QuestionsProps {
+  mode: string;
+  Class: string;
+  normalQuestions: NormalQuestion[];
+  comprehensionQuestions: ComprehensionQuestion[];
+}
 
 
-  const QuestionComponent: React.FC = () => {
-    const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>(new Array(questions.length).fill(null));
+
+// const questions: Question[] = [
+//   { 
+//     id: 1, 
+//     text: "What is the capital of France?", 
+//     options: {A: "London", B: "Berlin", C: "Paris", D: "Madrid"}, 
+//     correctAnswer: "C"
+//   },
+//   { 
+//     id: 2, 
+//     text: "Which planet is known as the Red Planet?", 
+//     options: {A: "Venus", B: "Mars", C: "Jupiter", D: "Saturn"}, 
+//     correctAnswer: "B"
+//   }
+// ];
+
+
+const QuestionComponent: React.FC<QuestionsProps> = ({ mode, Class, normalQuestions, comprehensionQuestions }) => {
+  const allQuestions = [
+    ...normalQuestions.map((q) => ({ ...q, type: 'normal', comprehension:"" })),
+    ...comprehensionQuestions.flatMap((comp) =>
+      comp.questions.map((q, index) => ({
+        ...q,
+        _id: comp._id,
+        comprehension: comp.comprehension,
+        correctAnswer: comp.correctAnswers[index],
+        explanation: comp.explanations[index],
+        type: 'comprehension',
+      }))
+    ),
+  ];
+    const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>(new Array(allQuestions.length).fill(null));
     const [currentQuestion, setCurrentQuestion] = useState(1);
     const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
     const [score, setScore] = useState(0);
     const [submitted, setSubmitted] = useState(false);
+    const [questionNumber, setQuestionNumber] = useState(0)
+
   
-    const query = useQuery();
-    const mode = query.get("mode") || "Practice";
-    const Class = query.get("class");
+    // const query = useQuery();
+    // const mode = query.get("mode") || "Practice";
+    // const Class = query.get("class");
   
     const navigate = useNavigate();
   
     useEffect(() => {
       calculateScore();
     }, [selectedAnswers]);
+
+    
   
     const handleAnswerClick = (answer: string, index: number) => {
       const newSelectedAnswers = [...selectedAnswers];
@@ -87,7 +116,7 @@ const questions: Question[] = [
     };
   
     const handleNext = () => {
-      if (currentQuestion < questions.length) {
+      if (currentQuestion < allQuestions.length) {
         setCurrentQuestion((prev) => prev + 1);
       }
     };
@@ -120,43 +149,38 @@ const handleBackClick = () => {
   
     const calculateScore = () => {
       const newScore = selectedAnswers.reduce((acc, answer, index) => {
-        return answer === questions[index].correctAnswer ? acc + 1 : acc;
+        return answer === allQuestions[index].correctAnswer ? acc + 1 : acc;
       }, 0);
       setScore(newScore);
     };
   
-    const getOptionStyle = (answer: string, index: number) => {
+    const getOptionStyle = (optionKey: string, index: number) => {
       const selectedAnswer = selectedAnswers[index];
-      const correctAnswer = questions[index].correctAnswer;
+      const correctAnswer = allQuestions[index].correctAnswer;
   
-      // Using pure black for dark text color on colored backgrounds
       const darkTextColor = '#000000';
   
       if (mode === "Practice Test") {
         if (selectedAnswer) {
-          // Show immediate feedback in Practice Test mode once an answer is selected
-          if (answer === correctAnswer) {
+          if (optionKey === correctAnswer) {
             return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
           }
-          if (answer === selectedAnswer && answer !== correctAnswer) {
+          if (optionKey === selectedAnswer && optionKey !== correctAnswer) {
             return { backgroundColor: 'red', color: darkTextColor, fontWeight: 'bold' };
           }
         }
       } else if (!submitted) {
-        // For other modes, only highlight the selected answer in blue before submission
-        if (answer === selectedAnswer) {
+        if (optionKey === selectedAnswer) {
           return { backgroundColor: 'blue', color: 'white', fontWeight: 'bold' };
         }
-      } if(submitted) {
-        // After submission, show correct and incorrect answers
-        if (answer === correctAnswer) {
+      } else if (submitted) {
+        if (optionKey === correctAnswer) {
           return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
         }
-        if (answer === selectedAnswer && answer !== correctAnswer) {
+        if (optionKey === selectedAnswer && optionKey !== correctAnswer) {
           return { backgroundColor: 'red', color: darkTextColor, fontWeight: 'bold' };
         }
-        // Highlight the correct answer if it was not selected at all
-        if (selectedAnswer === null && answer === correctAnswer) {
+        if (selectedAnswer === null && optionKey === correctAnswer) {
           return { backgroundColor: 'green', color: darkTextColor, fontWeight: 'bold' };
         }
       }
@@ -164,25 +188,27 @@ const handleBackClick = () => {
       return { backgroundColor: 'transparent', color: darkTextColor, fontWeight: 'normal' };
     };
   
+  
     const renderQuestion = (question: Question, index: number) => {
       return (
-        <Box key={question.id} sx={{ marginBottom: '30px' }}>
+        <Box key={question._id} sx={{ marginBottom: '30px' }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '10px' }}>
-            Question {question.id}
+            Question {index+1}
           </Typography>
-          <Typography sx={{ fontSize: '1.5rem', marginBottom: '15px' }}>{question.text}</Typography>
+          <Typography sx={{ fontSize: '1.5rem', marginBottom: '15px' }}>{question.comprehension}</Typography>
+          <Typography sx={{ fontSize: '1.5rem', marginBottom: '15px' }}>{question.question}</Typography>
   
           <Grid container spacing={3}>
-            {question.options.map((answer) => (
-              <Grid item xs={6} key={answer}>
+            {Object.entries(question.options).map(([key, value]) => (
+              <Grid item xs={6} key={key}>
                 <Button
                   variant="outlined"
-                  sx={{ ...getOptionStyle(answer, index), fontSize: '1.25rem', padding: '15px 20px' }}
-                  onClick={() => handleAnswerClick(answer, index)}
+                  sx={{ ...getOptionStyle(key, index), fontSize: '1.25rem', padding: '15px 20px' }}
+                  onClick={() => handleAnswerClick(key, index)}
                   fullWidth
                   disabled={submitted || (mode === "Practice Test" && selectedAnswers[index] !== null)}
                 >
-                  {answer}
+                  {`${key}. ${value}`}
                 </Button>
               </Grid>
             ))}
@@ -201,7 +227,7 @@ const handleBackClick = () => {
             <ArrowBackIcon />
           </Button>
           <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
-            Your Score: {score} out of {questions.length}
+            Your Score: {score} out of {allQuestions.length}
           </Typography>
           {/* Back button for post submission */}
           <Button 
@@ -226,13 +252,13 @@ const handleBackClick = () => {
                 <ArrowBackIcon />
               </Button>
   
-              {renderQuestion(questions[currentQuestion - 1], currentQuestion - 1)}
+              {renderQuestion(allQuestions[currentQuestion - 1], currentQuestion - 1)}
   
               <Button 
                 variant="contained" 
                 color="primary" 
                 onClick={handleNext} 
-                disabled={currentQuestion === questions.length} 
+                disabled={currentQuestion === allQuestions.length} 
                 sx={{ fontSize: '1.25rem', padding: '15px 20px' }}
               >
                 <ArrowForwardIcon />
@@ -242,7 +268,7 @@ const handleBackClick = () => {
   
           {(!submitted && mode !== "Practice Test") || submitted ? (
             <Box sx={{ height: "80vh", width: "80vw", overflowY: 'scroll', padding: '30px' }}>
-              {questions.map((question, index) => renderQuestion(question, index))}
+              {allQuestions.map((question, index) => renderQuestion(question, index))}
               {!submitted && mode !== "Practice Test" && (
                 <Button 
                   variant="contained" 
@@ -257,7 +283,7 @@ const handleBackClick = () => {
           ) : null}
   
           {/* Submit button for Practice Test on the last question */}
-          {!submitted && mode === "Practice Test" && currentQuestion === questions.length && (
+          {!submitted && mode === "Practice Test" && currentQuestion === allQuestions.length && (
             <Button 
               variant="contained" 
               color="success" 
@@ -270,7 +296,7 @@ const handleBackClick = () => {
   
           <Dialog open={isSubmitDialogOpen} onClose={handleCloseDialog}>
             <DialogTitle sx={{ fontSize: '1.5rem' }}>Are you sure you want to submit?</DialogTitle>
-            <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {questions.length}</Typography>
+            <Typography sx={{ padding: '20px', fontSize: '1.25rem' }}>Your current score is {score} out of {allQuestions.length}</Typography>
             <DialogActions>
               <Button onClick={handleCloseDialog} color="primary" sx={{ fontSize: '1.25rem', padding: '15px 20px' }}>
                 Cancel

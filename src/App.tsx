@@ -17,7 +17,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Homepage />} />
           <Route path='/test' element={<Test />} />
-          <Route path='/questions' element={<Questions />} />
+          {/* <Route path='/questions' element={<QuestionComponent />} /> */}
           <Route path="/result/:mode/:selectedClass" element={<TestResult />} />
         </Routes>
       </Router>

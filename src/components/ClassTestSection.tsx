@@ -106,9 +106,9 @@ const ClassTestSection = () => {
 
 
         <Box sx={{ display: "flex", gap: "20px" }}>
-          <Button variant="outlined" onClick={() => handleClassClick('Class 3')}>Class 3</Button>
-          <Button variant="outlined" onClick={() => handleClassClick('Class 6')}>Class 6</Button>
-          <Button variant="outlined" onClick={() => handleClassClick('Class 9')}>Class 9</Button>
+          <Button variant="outlined" onClick={() => handleClassClick('3')}>Class 3</Button>
+          <Button variant="outlined" onClick={() => handleClassClick('6')}>Class 6</Button>
+          <Button variant="outlined" onClick={() => handleClassClick('9')}>Class 9</Button>
         </Box>
 
       </Card>
